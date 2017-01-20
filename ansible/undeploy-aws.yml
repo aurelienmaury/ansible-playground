@@ -36,8 +36,8 @@
           pipelining=True
           ssh_args="-F ssh.cfg"
 
-    - name: Removing generated ssh.cfg
+    - name: Removing generated files
       shell: >-
-        rm {{ playbook_dir }}/../ssh.cfg
+        rm {{ playbook_dir }}/../ssh.cfg && rm {{ playbook_dir }}/inventories/training.inventory
       args:
         warn: no

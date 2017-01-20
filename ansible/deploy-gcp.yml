@@ -3,15 +3,6 @@
   become: no
   gather_facts: no
 
-  pre_tasks:
-    - fail:
-        msg: "Environment variable {{ item }} is required."
-      when: "{{ lookup('env', item) == '' }}"
-      with_items:
-        - "AWS_DEFAULT_REGION"
-        - "AWS_SECRET_ACCESS_KEY"
-        - "AWS_ACCESS_KEY_ID"
-
   tasks:
     - name: Applying Terraform (may take several minutes)
       shell: >-
@@ -29,14 +20,6 @@
       args:
         chdir: "{{ playbook_dir }}/../terraform/AWS"
       register: tf_bastion_raw
-
-    - name: Applying Terraform (may take several minutes)
-      shell: >-
-        terraform output worknode{{ item }}
-      args:
-        chdir: "{{ playbook_dir }}/../terraform/AWS"
-      register: tf_worknode_raw
-      with_sequence: start=0 count=5
 
     - set_fact:
         bastion_ip: "{{ tf_bastion_raw.stdout }}"
