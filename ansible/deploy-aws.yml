@@ -1,0 +1,75 @@
+---
+- hosts: localhost
+  become: no
+  gather_facts: no
+
+  pre_tasks:
+    - fail: msg="Environment variable {{ item }} is required."
+      when: "{{ lookup('env', item) == '' }}"
+      with_items:
+        - "AWS_DEFAULT_REGION"
+        - "AWS_SECRET_ACCESS_KEY"
+        - "AWS_ACCESS_KEY_ID"
+
+  tasks:
+    - name: Applying Terraform (may take several minutes)
+      shell: >-
+        terraform apply
+      args:
+        chdir: "{{ playbook_dir }}/../terraform/AWS"
+      register: tf_apply_raw
+      changed_when: not (tf_apply_raw.stdout|search('0 added, 0 changed, 0 destroyed'))
+      tags:
+        - apply
+
+    - name: Extracting terraform output vars
+      shell: >-
+        terraform output bastion
+      args:
+        chdir: "{{ playbook_dir }}/../terraform/AWS"
+      register: tf_bastion_raw
+      changed_when: no
+
+    - name: Extracting terraform output vars
+      shell: >-
+        terraform output worknode{{ item }}
+      args:
+        chdir: "{{ playbook_dir }}/../terraform/AWS"
+      register: tf_worknode_raw
+      changed_when: no
+      with_sequence: start=0 count=5
+
+    - set_fact:
+        bastion_ip: "{{ tf_bastion_raw.stdout }}"
+        worknodes_ip: "{{ tf_worknode_raw.results|map(attribute='stdout')|list }}"
+
+    - include: inc/reserve_host_for_lab.yml
+      with_together:
+        - "{{ worknodes_ip }}"
+        - "{{ aws_padawans }}"
+
+    - name: Generating ssh.cfg
+      template:
+        src: "templates/ssh.cfg.j2"
+        dest: "{{ playbook_dir }}/../ssh.cfg"
+
+    - name: Generating host inventory
+      template:
+        src: "templates/inventory.j2"
+        dest: "{{ playbook_dir }}/inventories/training.inventory"
+
+    - name: Adding default host inventory to ansible.cfg
+      lineinfile:
+        dest: "{{ playbook_dir }}/../ansible.cfg"
+        line: "inventory = ./ansible/inventories/training.inventory"
+        state: present
+        insertafter: '^\[defaults\]$'
+
+    - name: Adding ssh options to ansible.cfg
+      blockinfile:
+        dest: "{{ playbook_dir }}/../ansible.cfg"
+        state: present
+        block: |-
+          [ssh_connection]
+          pipelining=True
+          ssh_args="-F ssh.cfg"

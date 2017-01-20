@@ -1,0 +1,16 @@
+---
+- set_fact:
+    host_private_ip: "{{ item[0] }}"
+    padawan: "{{ item[1] }}"
+
+- lineinfile:
+    dest: "{{ playbook_dir }}/host_vars/{{ host_private_ip }}.yml"
+    line: "---"
+    create: yes
+    insertbefore: BOF
+
+- lineinfile:
+    dest: "{{ playbook_dir }}/host_vars/{{ host_private_ip }}.yml"
+    line: >-
+      padawan: "{{ padawan }}"
+    insertafter: EOF

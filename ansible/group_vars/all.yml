@@ -1,0 +1,14 @@
+---
+aws_padawans:
+  - alban
+  - jcharles
+  - mohamed
+  - thibaud
+  - yohan
+
+gcp_padawans:
+  - arnaud
+
+admin_key: "~/.ssh/amaury_aws.pem"
+subnet_cidr: "10.100.1.0/24"
+admin_user: "admin"

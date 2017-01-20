@@ -1,0 +1,11 @@
+[bastion]
+BASTION_AWS
+
+[classroom]
+{% for server in worknodes_ip %}
+{{ server }}
+{% endfor %}
+
+[training:children]
+bastion
+classroom

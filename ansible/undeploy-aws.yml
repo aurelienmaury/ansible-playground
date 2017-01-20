@@ -1,0 +1,43 @@
+---
+- hosts: localhost
+  become: no
+
+  pre_tasks:
+    - name: Checking for AWS mandatory env vars
+      fail:
+        msg: "Mandatory env var {{ item }} not found."
+      when: lookup('env', item) == ''
+      with_items:
+        - "AWS_DEFAULT_REGION"
+        - "AWS_SECRET_ACCESS_KEY"
+        - "AWS_ACCESS_KEY_ID"
+
+  tasks:
+    - name: Destroying Terraform (may take several minutes)
+      shell: >
+        terraform destroy -force
+      args:
+        chdir: "{{ playbook_dir }}/../terraform/AWS"
+      register: tf_apply_raw
+      changed_when: not (tf_apply_raw.stdout|search('0 added, 0 changed, 0 destroyed'))
+
+    - name: Removing default host inventory from ansible.cfg
+      lineinfile:
+        dest: "{{ playbook_dir }}/../ansible.cfg"
+        line: "inventory = ./ansible/inventories/training.inventory"
+        state: absent
+
+    - name: Removing ssh options from ansible.cfg
+      blockinfile:
+        dest: "{{ playbook_dir }}/../ansible.cfg"
+        state: absent
+        block: |
+          [ssh_connection]
+          pipelining=True
+          ssh_args="-F ssh.cfg"
+
+    - name: Removing generated ssh.cfg
+      shell: >-
+        rm {{ playbook_dir }}/../ssh.cfg
+      args:
+        warn: no
