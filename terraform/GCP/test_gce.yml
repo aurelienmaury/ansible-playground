@@ -1,0 +1,16 @@
+---
+- hosts: localhost
+  become: no
+  gather_facts: no
+  tasks:
+    - gce:
+        instance_names: my-test-instance1
+        zone: europe-west1-b
+        project_id: "pelagic-pager-155923"
+        service_account_email: "417819296333-compute@developer.gserviceaccount.com"
+        machine_type: f1-micro
+        network: ansible-network
+        subnetwork: ansible-subnetwork
+        image: debian-8
+        state: present
+        credentials_file: "./secrets/Ansible-7ab669a82b50.json"

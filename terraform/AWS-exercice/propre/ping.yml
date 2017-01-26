@@ -1,0 +1,14 @@
+---
+- hosts: webservers
+  become: yes
+
+  tasks:
+    - apt:
+        name: apache2
+        state: present
+
+    - service:
+        name: apache2
+        state: started
+        enabled: yes
+

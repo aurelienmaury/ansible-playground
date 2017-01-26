@@ -2,9 +2,7 @@
 BASTION_AWS
 
 [classroom]
-{% for server in worknodes_ip %}
-{{ server }}
-{% endfor %}
+{{ worknode_ip }}
 
 [training:children]
 bastion

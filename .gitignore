@@ -4,3 +4,6 @@
 *.iws
 terraform/GCP/secrets/*
 terraform/AWS/secrets/*
+ansible/inventories/*
+ssh.cfg
+keys/*

@@ -1,10 +1,7 @@
 ---
 aws_padawans:
-  - alban
-  - jcharles
-  - mohamed
-  - thibaud
-  - yohan
+  - omdere
+  - cbeuzelin
 
 gcp_padawans:
   - arnaud

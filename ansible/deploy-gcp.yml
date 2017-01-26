@@ -25,11 +25,6 @@
         bastion_ip: "{{ tf_bastion_raw.stdout }}"
         worknodes_ip: "{{ tf_worknode_raw.results|map(attribute='stdout')|list }}"
 
-    - include: inc/reserve_host_for_lab.yml
-      with_together:
-        - "{{ worknodes_ip }}"
-        - "{{ aws_padawans }}"
-
     - name: Generating ssh.cfg
       template:
         src="templates/ssh.cfg.j2"

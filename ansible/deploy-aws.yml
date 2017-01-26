@@ -3,6 +3,9 @@
   become: no
   gather_facts: no
 
+  vars:
+    exo_name: "exo_01-AWS-Bastion"
+
   pre_tasks:
     - fail: msg="Environment variable {{ item }} is required."
       when: "{{ lookup('env', item) == '' }}"
@@ -16,7 +19,7 @@
       shell: >-
         terraform apply
       args:
-        chdir: "{{ playbook_dir }}/../terraform/AWS"
+        chdir: "{{ playbook_dir }}/../terraform/{{ exo_name }}"
       register: tf_apply_raw
       changed_when: not (tf_apply_raw.stdout|search('0 added, 0 changed, 0 destroyed'))
       tags:
@@ -26,27 +29,21 @@
       shell: >-
         terraform output bastion
       args:
-        chdir: "{{ playbook_dir }}/../terraform/AWS"
+        chdir: "{{ playbook_dir }}/../terraform/{{ exo_name }}"
       register: tf_bastion_raw
       changed_when: no
 
     - name: Extracting terraform output vars
       shell: >-
-        terraform output worknode{{ item }}
+        terraform output worknode
       args:
-        chdir: "{{ playbook_dir }}/../terraform/AWS"
+        chdir: "{{ playbook_dir }}/../terraform/{{ exo_name }}"
       register: tf_worknode_raw
       changed_when: no
-      with_sequence: start=0 count=5
 
     - set_fact:
         bastion_ip: "{{ tf_bastion_raw.stdout }}"
-        worknodes_ip: "{{ tf_worknode_raw.results|map(attribute='stdout')|list }}"
-
-    - include: inc/reserve_host_for_lab.yml
-      with_together:
-        - "{{ worknodes_ip }}"
-        - "{{ aws_padawans }}"
+        worknode_ip: "{{ tf_worknode_raw.stdout }}"
 
     - name: Generating ssh.cfg
       template:

@@ -33,7 +33,6 @@ resource "aws_instance" "bastion" {
   }
 }
 resource "aws_instance" "worknode" {
-  count = 6
   ami = "${var.ami_id}"
   instance_type = "t2.micro"
   key_name = "amaury_aws"
