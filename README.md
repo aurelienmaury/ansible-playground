@@ -14,5 +14,6 @@
 * Injectez des accès grâce au playbook `ansible/inject_classroom_accesses.yml`
 * Lisez et comprenez 100% des playbooks, include, template et fichiers générés.
 
+Pour refermer l'exercice, lancez le playbook `ansible-playbook ansible/undeploy-exo_01.yml`
 
-
+# 02. Créer et gérer de l'infra Cloud (AWS et/ou GCP)
