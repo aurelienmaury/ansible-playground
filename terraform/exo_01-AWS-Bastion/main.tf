@@ -22,7 +22,7 @@ resource "aws_instance" "bastion" {
 
   ami = "${var.ami_id}"
   instance_type = "t2.micro"
-  key_name = "amaury_aws"
+  key_name = "${var.key_name}"
   subnet_id = "${aws_subnet.public_subnet.id}"
   vpc_security_group_ids = ["${aws_security_group.bastions.id}"]
 

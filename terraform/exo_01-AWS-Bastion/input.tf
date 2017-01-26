@@ -6,6 +6,10 @@ variable "vpc_cidr" {
   default = "10.100.0.0/16"
 }
 
+variable "key_name" {
+  default = "amaury_aws"
+}
+
 variable "availability_zone" {
   default = "eu-west-1a"
 }

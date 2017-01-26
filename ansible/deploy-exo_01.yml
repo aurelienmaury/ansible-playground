@@ -7,12 +7,28 @@
     exo_name: "exo_01-AWS-Bastion"
 
   pre_tasks:
-    - fail: msg="Environment variable {{ item }} is required."
+    - debug:
+        msg: "Checking initial conditions."
+
+    - fail:
+        msg: "Environment variable {{ item }} is required."
       when: "{{ lookup('env', item) == '' }}"
       with_items:
         - "AWS_DEFAULT_REGION"
         - "AWS_SECRET_ACCESS_KEY"
         - "AWS_ACCESS_KEY_ID"
+
+    - fail:
+        msg: >-
+          Host variable {{ item }} for localhost is required.
+          Please define it in 'ansible/host_vars/localhost.yml'.
+      when: "{{ hostvars['localhost'][item] is not defined }}"
+      with_items:
+        - "admin_key"
+        - "aws_padawans"
+
+    - debug:
+        msg: "Seems to be matching. Going on."
 
   tasks:
     - name: Applying Terraform (may take several minutes)
