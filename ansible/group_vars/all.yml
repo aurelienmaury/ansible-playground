@@ -1,11 +1,14 @@
 ---
+# Name of the padawans that will be created as normal users on Bastion host
+# and as admin on the worknode (AWS)
 aws_padawans:
   - omdere
   - cbeuzelin
 
+# Name of the padawans that will be created as normal users on Bastion host
+# and as admin on the worknode (GCP)
 gcp_padawans:
   - arnaud
 
-admin_key: "~/.ssh/amaury_aws.pem"
 subnet_cidr: "10.100.1.0/24"
 admin_user: "admin"

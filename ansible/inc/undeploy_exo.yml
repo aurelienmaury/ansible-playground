@@ -1,0 +1,34 @@
+---
+- fail:
+    msg: >-
+      Variable 'exo_name' should be defined to include this tasks file.
+  when: "{{ exo_name is not defined }}"
+
+- name: Destroying Terraform (may take several minutes)
+  shell: >
+    terraform destroy -force
+  args:
+    chdir: "{{ playbook_dir }}/../terraform/{{ exo_name }}"
+  register: tf_apply_raw
+  changed_when: not (tf_apply_raw.stdout|search('0 added, 0 changed, 0 destroyed'))
+
+- name: Removing default host inventory from ansible.cfg
+  lineinfile:
+    dest: "{{ playbook_dir }}/../ansible.cfg"
+    line: "inventory = ./ansible/inventories/training.inventory"
+    state: absent
+
+- name: Removing ssh options from ansible.cfg
+  blockinfile:
+    dest: "{{ playbook_dir }}/../ansible.cfg"
+    state: absent
+    block: |
+      [ssh_connection]
+      pipelining=True
+      ssh_args="-F ssh.cfg"
+
+- name: Removing generated files
+  shell: >-
+    rm {{ playbook_dir }}/../ssh.cfg && rm {{ playbook_dir }}/inventories/training.inventory
+  args:
+    warn: no

@@ -3,12 +3,39 @@
   become: no
   gather_facts: no
 
+  vars:
+    exo_name: "exo_02-AWS-infra"
+
+  pre_tasks:
+    - debug:
+        msg: "Checking initial conditions."
+
+    - fail:
+        msg: "Environment variable {{ item }} is required."
+      when: "{{ lookup('env', item) == '' }}"
+      with_items:
+        - "AWS_DEFAULT_REGION"
+        - "AWS_SECRET_ACCESS_KEY"
+        - "AWS_ACCESS_KEY_ID"
+
+    - fail:
+        msg: >-
+          Host variable {{ item }} for localhost is required.
+          Please define it in 'ansible/host_vars/localhost.yml'.
+      when: "{{ hostvars['localhost'][item] is not defined }}"
+      with_items:
+        - "admin_key"
+        - "aws_padawans"
+
+    - debug:
+        msg: "Seems to be matching. Going on."
+
   tasks:
     - name: Applying Terraform (may take several minutes)
       shell: >-
         terraform apply
       args:
-        chdir: "{{ playbook_dir }}/../terraform/GCP"
+        chdir: "{{ playbook_dir }}/../terraform/{{ exo_name }}"
       register: tf_apply_raw
       changed_when: not (tf_apply_raw.stdout|search('0 added, 0 changed, 0 destroyed'))
       tags:
@@ -18,7 +45,7 @@
       shell: >-
         terraform output bastion
       args:
-        chdir: "{{ playbook_dir }}/../terraform/AWS"
+        chdir: "{{ playbook_dir }}/../terraform/{{ exo_name }}"
       register: tf_bastion_raw
 
     - set_fact:

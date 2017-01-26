@@ -24,31 +24,6 @@
         - "AWS_ACCESS_KEY_ID"
 
   tasks:
-    - name: Destroying Terraform (may take several minutes)
-      shell: >
-        terraform destroy -force
-      args:
-        chdir: "{{ playbook_dir }}/../terraform/AWS"
-      register: tf_apply_raw
-      changed_when: not (tf_apply_raw.stdout|search('0 added, 0 changed, 0 destroyed'))
-
-    - name: Removing default host inventory from ansible.cfg
-      lineinfile:
-        dest: "{{ playbook_dir }}/../ansible.cfg"
-        line: "inventory = ./ansible/inventories/training.inventory"
-        state: absent
-
-    - name: Removing ssh options from ansible.cfg
-      blockinfile:
-        dest: "{{ playbook_dir }}/../ansible.cfg"
-        state: absent
-        block: |
-          [ssh_connection]
-          pipelining=True
-          ssh_args="-F ssh.cfg"
-
-    - name: Removing generated files
-      shell: >-
-        rm {{ playbook_dir }}/../ssh.cfg && rm {{ playbook_dir }}/inventories/training.inventory
-      args:
-        warn: no
+    - include: "inc/undeploy_exo.yml"
+      vars:
+        exo_name: "exo_01-AWS-Bastion"
