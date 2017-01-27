@@ -1,0 +1,8 @@
+[classroom]
+{% for host in ec2_hostnames %}
+{{ host }} instance_id={{ ec2_ids[loop.index0] }}
+{% endfor %}
+
+[classroom:vars]
+ansible_user = "admin"
+ansible_ssh_private_key_file = "{{ admin_key }}"

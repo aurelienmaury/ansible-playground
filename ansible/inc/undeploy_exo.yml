@@ -29,6 +29,7 @@
 
 - name: Removing generated files
   shell: >-
-    rm {{ playbook_dir }}/../ssh.cfg && rm {{ playbook_dir }}/inventories/training.inventory
+    rm {{ playbook_dir }}/../ssh.cfg && rm {{ playbook_dir }}/inventories/tmp.inventory
   args:
     warn: no
+  ignore_errors: yes

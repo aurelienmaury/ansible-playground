@@ -5,6 +5,7 @@
 
   vars:
     exo_name: "exo_02-AWS-infra"
+    tf_state_path: "{{ playbook_dir }}/../terraform/{{ exo_name }}/terraform.tfstate"
 
   pre_tasks:
     - debug:
@@ -41,39 +42,12 @@
       tags:
         - apply
 
-    - name: Extracting terraform output vars
-      shell: >-
-        terraform output bastion
-      args:
-        chdir: "{{ playbook_dir }}/../terraform/{{ exo_name }}"
-      register: tf_bastion_raw
-
     - set_fact:
-        bastion_ip: "{{ tf_bastion_raw.stdout }}"
-        worknodes_ip: "{{ tf_worknode_raw.results|map(attribute='stdout')|list }}"
+        tf_state: "{{ lookup('file', tf_state_path)|from_json }}"
 
-    - name: Generating ssh.cfg
-      template:
-        src="templates/ssh.cfg.j2"
-        dest="{{ playbook_dir }}/../ssh.cfg"
-
-    - name: Generating host inventory
-      template:
-        src="templates/inventory.j2"
-        dest="{{ playbook_dir }}/inventories/training.inventory"
-
-    - name: Adding default host inventory to ansible.cfg
-      lineinfile:
-        dest: "{{ playbook_dir }}/../ansible.cfg"
-        line: "inventory = ./ansible/inventories/training.inventory"
-        state: present
-        insertafter: '^\[defaults\]$'
-
-    - name: Adding ssh options to ansible.cfg
-      blockinfile:
-        dest: "{{ playbook_dir }}/../ansible.cfg"
-        state: present
-        block: |-
-          [ssh_connection]
-          pipelining=True
-          ssh_args="-F ssh.cfg"
+    - name: Extract values for next steps
+      debug:
+        msg:
+          - "#######################################"
+          - "subnet_id to deploy to: {{ tf_state.modules[0]['resources']['aws_subnet.public_subnet']['primary']['id'] }}"
+          - "#######################################"

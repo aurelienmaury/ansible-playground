@@ -1,0 +1,16 @@
+---
+- hosts: classroom
+  become: yes
+
+  tasks:
+    - apt:
+        name: apache2
+        state: present
+
+    - ec2_elb:
+        instance_id: "{{ instance_id }}"
+        ec2_elbs:
+          - training
+        state: present
+      delegate_to: localhost
+      become: no

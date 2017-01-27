@@ -17,3 +17,9 @@
 Pour refermer l'exercice, lancez le playbook `ansible-playbook ansible/undeploy-exo_01.yml`
 
 # 02. Créer et gérer de l'infra Cloud (AWS et/ou GCP)
+
+
+# Exercices complémentaires
+
+* factoriser les scripts `ansible/deploy-*` et `ansible/undeploy-*` pour n'en faire qu'un seul qui prenne
+un paramètre d'entrée.

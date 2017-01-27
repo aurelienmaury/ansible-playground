@@ -1,4 +1,0 @@
-[webservers]
-{% for instance in webserver.instances %}
-{{ instance.name }} ansible_host={{ instance.public_ip }}
-{% endfor %}
