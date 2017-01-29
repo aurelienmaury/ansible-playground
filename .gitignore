@@ -2,8 +2,9 @@
 *.iml
 *.ipr
 *.iws
-terraform/GCP/secrets/*
-terraform/AWS/secrets/*
+**/secrets/*
+**/secrets/*
 ansible/inventories/*
 ssh.cfg
 keys/*
+
