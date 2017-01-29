@@ -1,3 +1,22 @@
+variable "ssh_pub_key" {
+  default = "./secrets/pub_key"
+}
+
+variable "gcp_credentials_path" {
+  default = "./secrets/Ansible-7ab669a82b50.json"
+}
+
+variable "gcp_region" {
+  default = "europe-west1"
+}
+
+provider "google" {
+  credentials = "${file(var.gcp_credentials_path)}"
+  project     = "pelagic-pager-155923"
+  region      = "europe-west1"
+}
+
+
 resource "google_compute_network" "network" {
   name                    = "ansible-network"
   auto_create_subnetworks = "false"
@@ -52,6 +71,6 @@ resource "google_compute_instance" "bastion" {
   }
 
   metadata {
-    ssh-keys = "admin:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/PW7tS5jF5rwSCiTD6bnlovTyS7MPJeI2/uv2nY5W5ZA5WmYPUpCFr0rAnhHoemwCqRfP5pj7KRv17r8m97iEt/U9HlaXxKPtpUZ96oWbfePemZnHITY4f4QFlhyuMm4cIO6j01LyOyMd5n9FLrN4S9IReSRmlDOw+L10DVEfAxn+3nGdzv/vGuwUkgSLSUiLrXxQWcwMHMtmkhv1oTIT4j07jVK2OdSlN4jj/BwQnPDw+I8F2KTOghs4+NPnATUxK6cp2uiDpgaxKMinzvZHR1vIBVuyVUyJ+Sm85+jOTFO08tpSq/LenYQMuLq1SddEhV5pwKa+xSUnOo9htgRr amaury@MacBook-Pro-de-Aurelien.local"
+    ssh-keys = "admin:${file(var.ssh_pub_key)}"
   }
 }

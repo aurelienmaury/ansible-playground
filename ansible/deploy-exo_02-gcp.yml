@@ -11,14 +11,6 @@
         msg: "Checking initial conditions."
 
     - fail:
-        msg: "Environment variable {{ item }} is required."
-      when: "{{ lookup('env', item) == '' }}"
-      with_items:
-        - "AWS_DEFAULT_REGION"
-        - "AWS_SECRET_ACCESS_KEY"
-        - "AWS_ACCESS_KEY_ID"
-
-    - fail:
         msg: >-
           Host variable {{ item }} for localhost is required.
           Please define it in 'ansible/host_vars/localhost.yml'.
