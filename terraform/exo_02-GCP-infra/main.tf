@@ -1,19 +1,7 @@
-variable "ssh_pub_key" {
-  default = "./secrets/pub_key"
-}
-
-variable "gcp_credentials_path" {
-  default = "./secrets/Ansible-7ab669a82b50.json"
-}
-
-variable "gcp_region" {
-  default = "europe-west1"
-}
-
 provider "google" {
   credentials = "${file(var.gcp_credentials_path)}"
-  project     = "pelagic-pager-155923"
-  region      = "europe-west1"
+  project     = "${var.gcp_project}"
+  region      = "${var.gcp_region}"
 }
 
 
@@ -73,4 +61,8 @@ resource "google_compute_instance" "bastion" {
   metadata {
     ssh-keys = "admin:${file(var.ssh_pub_key)}"
   }
+}
+
+output "bastion" {
+  value = "${google_compute_instance.bastion.network_interface.0.access_config.0.assigned_nat_ip}"
 }

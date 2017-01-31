@@ -1,7 +1,11 @@
 [classroom]
+{% if ec2_hostnames is defined %}
 {% for host in ec2_hostnames %}
 {{ host }} instance_id={{ ec2_ids[loop.index0] }}
 {% endfor %}
+{% elif bastion_ip is defined %}
+{{ bastion_ip }}
+{% endif %}
 
 [classroom:vars]
 ansible_user = "admin"

@@ -42,7 +42,6 @@
 
     - set_fact:
         bastion_ip: "{{ tf_bastion_raw.stdout }}"
-        worknodes_ip: "{{ tf_worknode_raw.results|map(attribute='stdout')|list }}"
 
     - name: Generating ssh.cfg
       template:
@@ -51,8 +50,8 @@
 
     - name: Generating host inventory
       template:
-        src="templates/inventory.j2"
-        dest="{{ playbook_dir }}/inventories/training.inventory"
+        src="templates/inventory_02.j2"
+        dest="{{ playbook_dir }}/inventories/training-02.inventory"
 
     - name: Adding default host inventory to ansible.cfg
       lineinfile:
