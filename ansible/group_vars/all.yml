@@ -12,3 +12,4 @@ gcp_padawans:
 
 subnet_cidr: "10.100.1.0/24"
 admin_user: "admin"
+key_name: "amaury_aws"

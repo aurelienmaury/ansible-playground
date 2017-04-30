@@ -4,7 +4,7 @@
   gather_facts: no
 
   vars:
-    exo_name: "exo_01-AWS-Bastion"
+    exo_name: "lab"
 
   pre_tasks:
     - debug:
@@ -12,7 +12,7 @@
 
     - fail:
         msg: "Environment variable {{ item }} is required."
-      when: "{{ lookup('env', item) == '' }}"
+      when: lookup('env', item) == ''
       with_items:
         - "AWS_DEFAULT_REGION"
         - "AWS_SECRET_ACCESS_KEY"
@@ -22,7 +22,7 @@
         msg: >-
           Host variable {{ item }} for localhost is required.
           Please define it in 'ansible/host_vars/localhost.yml'.
-      when: "{{ hostvars['localhost'][item] is not defined }}"
+      when: hostvars['localhost'][item] is not defined
       with_items:
         - "admin_key"
         - "aws_padawans"
@@ -34,6 +34,8 @@
     - name: Applying Terraform (may take several minutes)
       shell: >-
         terraform apply
+        -var 'classroom_size={{ aws_padawans|length }}'
+        -var 'key_name={{ key_name }}'
       args:
         chdir: "{{ playbook_dir }}/../terraform/{{ exo_name }}"
       register: tf_apply_raw
@@ -51,7 +53,7 @@
 
     - name: Extracting terraform output vars
       shell: >-
-        terraform output worknode
+        terraform output -json classroom
       args:
         chdir: "{{ playbook_dir }}/../terraform/{{ exo_name }}"
       register: tf_worknode_raw
@@ -59,7 +61,7 @@
 
     - set_fact:
         bastion_ip: "{{ tf_bastion_raw.stdout }}"
-        worknode_ip: "{{ tf_worknode_raw.stdout }}"
+        classroom_ip_list: "{{ (tf_worknode_raw.stdout|from_json).value }}"
 
     - name: Generating ssh.cfg
       template:

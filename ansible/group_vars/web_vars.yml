@@ -1,0 +1,22 @@
+---
+share_between_malwares:
+  - name: "trojan horses"
+    share: 33.6
+  - name: "droppers"
+    qte: 22.1
+  - name: "spywares"
+    qte: 14.6
+  - name: "backdoors"
+    share: 15.7
+  - name: "worms"
+    share: 4.0
+  - name: "rootkit"
+    share: 1.9
+  - name: "adware"
+    share: 5.3
+  - name: "tool"
+    share: 1.6
+  - name: "exploit"
+    share: 0.3
+
+url_fact_checking: "https://www.gdata.fr/news/1760-number-of-new-computer-viruses"

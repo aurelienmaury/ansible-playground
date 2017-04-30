@@ -32,14 +32,16 @@ resource "aws_instance" "bastion" {
     Name = "training-${var.vpc_name}-${var.availability_zone}"
   }
 }
-resource "aws_instance" "worknode" {
+resource "aws_instance" "classroom" {
   ami = "${var.ami_id}"
   instance_type = "t2.micro"
-  key_name = "amaury_aws"
+  key_name = "${var.key_name}"
   subnet_id = "${aws_subnet.public_subnet.id}"
-  vpc_security_group_ids = ["${aws_security_group.bastions.id}"]
+  vpc_security_group_ids = ["${aws_security_group.web_front.id}"]
 
-  associate_public_ip_address = false
+  associate_public_ip_address = true
+
+  count = "${var.classroom_size}"
 
   tags {
     Name = "${var.vpc_name}-${count.index}-${var.availability_zone}"
@@ -67,7 +69,7 @@ resource "aws_route_table_association" "public_subnet_eu_west_1a_association" {
 
 
 resource "aws_security_group" "bastions" {
-  name = "service_bastions"
+  name = "training_bastions"
   description = "Allow SSH traffic from the internet"
   vpc_id = "${aws_vpc.vpc.id}"
 
@@ -76,6 +78,28 @@ resource "aws_security_group" "bastions" {
     to_port = 22
     protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = -1
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "web_front" {
+  name = "training_web_front"
+  description = "Allow SSH traffic from the internet"
+  vpc_id = "${aws_vpc.vpc.id}"
+
+  ingress {
+    from_port = 22
+    to_port = 22
+    protocol = "tcp"
+    security_groups = [
+      "${aws_security_group.bastions.id}"
+    ]
   }
 
   ingress {
