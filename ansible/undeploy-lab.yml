@@ -26,4 +26,4 @@
   tasks:
     - include: "inc/undeploy_exo.yml"
       vars:
-        exo_name: "exo_01-AWS-Bastion"
+        exo_name: "lab"
